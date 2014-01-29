@@ -4,16 +4,26 @@ rem ----------------------------------------------------------------------------
 rem Start Script for the dotCMS Server
 rem -----------------------------------------------------------------------------
 
+set "CURRENT_DIR=%cd%"
 
+rem Read an optional configuration file.
+if "x%RUN_CONF%" == "x" (
+   set "RUN_CONF=%CURRENT_DIR%\build.conf.bat"
+)
+if exist "%RUN_CONF%" (
+   echo Calling "%RUN_CONF%"
+   call "%RUN_CONF%" %*
+) else (
+   echo Config file not found "%RUN_CONF%"
+)
 
 rem Guess DOTCMS_HOME if not defined
 
 if "%OS%" == "Windows_NT" setlocal
 
 rem Guess CATALINA_HOME if not defined
-set "CURRENT_DIR=%cd%"
 if not "%CATALINA_HOME%" == "" goto gotHome
-set "CATALINA_HOME=%CURRENT_DIR%"
+set "CATALINA_HOME=%CURRENT_DIR%\.."
 if exist "%CATALINA_HOME%\bin\catalina.bat" goto okHome
 cd ..
 set "CATALINA_HOME=%cd%"
@@ -26,7 +36,7 @@ goto end
 :okHome
 
 if not "%DOTCMS_HOME%" == "" goto gotDotcmsHome
-set "DOTCMS_HOME=%CATALINA_HOME%\webapps\ROOT"
+set "DOTCMS_HOME=%CURRENT_DIR%\..\%HOME_FOLDER%"
 if exist "%DOTCMS_HOME%" goto okDotcmsHome
 :gotDotcmsHome
 if exist "%DOTCMS_HOME%" goto okDotcmsHome

@@ -25,14 +25,24 @@ done
 
 PRGDIR=`dirname "$PRG"`
 EXECUTABLE=catalina.sh
-DOTCMS_HOME=`cd "$PRGDIR/../webapps/ROOT" ; pwd`
+
+# Read an optional running configuration file
+if [ "x$RUN_CONF" = "x" ]; then
+    RUN_CONF="$PRGDIR/build.conf"
+fi
+if [ -r "$RUN_CONF" ]; then
+    . "$RUN_CONF"
+fi
+
+TOMCAT_HOME=`cd "$PRGDIR/.." ; pwd`
+DOTCMS_HOME=`cd "$PRGDIR/../$HOME_FOLDER" ; pwd`
 
 ## Script CONFIGURATION Options
 
 
 # JAVA_OPTS: Below are the recommended minimum settings for the Java VM.
-# These may (and should) be customized to suit your needs. Please check with
-# Sun Microsystems and the Apache Tomcat websites for the latest information
+# These may (and should) be customized to suit your needs. Please check with 
+# Sun Microsystems and the Apache Tomcat websites for the latest information 
 # http://java.sun.com
 # http://tomcat.apache.org
 
@@ -45,13 +55,12 @@ DOTCMS_HOME=`cd "$PRGDIR/../webapps/ROOT" ; pwd`
 ##add agentpath to be enable ability to profile application
 #JAVA_OPTS="-agentpath:/Applications/YourKit_Java_Profiler_9.0.5.app/bin/mac/libyjpagent.jnilib $JAVA_OPTS -Djava.awt.headless=true -Xverify:none -Dfile.encoding=UTF8 -server -Xms1024M -Xmx1024M -XX:PermSize=128m "
 
-JAVA_OPTS="$JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
-
+#JAVA_OPTS="$JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
 JAVA_OPTS="$JAVA_OPTS -Djava.awt.headless=true -Xverify:none -Dfile.encoding=UTF8 -server -Xmx1G -XX:MaxPermSize=256m -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -javaagent:$DOTCMS_HOME/WEB-INF/lib/jamm-0.2.5.jar"
 
 if [ "$1" = "debug" ] ; then
    #debug
-   JAVA_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8765 $JAVA_OPTS"
+   JAVA_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000 $JAVA_OPTS"
 fi
 
 
@@ -61,20 +70,20 @@ fi
 
 # Check that target executable exists
 if $os400; then
-  # -x will Only work on the os400 if the files are:
+  # -x will Only work on the os400 if the files are: 
   # 1. owned by the user
   # 2. owned by the PRIMARY group of the user
   # this will not work if the user belongs in secondary groups
   eval
 else
-  if [ ! -x "$PRGDIR"/"$EXECUTABLE" ]; then
-    echo "Cannot find $PRGDIR/$EXECUTABLE"
+  if [ ! -x "$TOMCAT_HOME"/bin/"$EXECUTABLE" ]; then
+    echo "Cannot find $TOMCAT_HOME/bin/$EXECUTABLE"
     echo "This file is needed to run this program"
     exit 1
   fi
-fi
+fi 
 
-# Sets DOTSERVER if not specified and changes existing JAVA_OPTS to use it
+# Sets DOTSERVER if not specified and changes existing JAVA_OPTS to use it 
 if [ -z "$DOTSERVER" ]; then
         DOTSERVER=`echo "$DOTCMS_HOME" | sed -e 's/\(.*\)\///'`
 fi
@@ -86,12 +95,12 @@ if [ -z "$CATALINA_PID" ]; then
         if [ "$1" = "start" ] ; then
                 if [ -e "$CATALINA_PID" ]; then
                         echo
-                        echo "Pid file $CATALINA_PID exists! Are you
+                        echo "Pid file $CATALINA_PID exists! Are you 
 sure dotCMS is not running?"
                         echo
-                        echo "If dotCMS is not running, please remove
+                        echo "If dotCMS is not running, please remove 
 the Pid file or change the"
-                        echo "setting in bin/catalina.sh before starting
+                        echo "setting in bin/catalina.sh before starting 
 your dotCMS application."
                         echo
                         exit 1
@@ -103,6 +112,7 @@ echo "Using DOTCMS_HOME = $DOTCMS_HOME"
 echo "Using DOTSERVER = $DOTSERVER"
 echo "Using CATALINA_PID = $CATALINA_PID"
 echo "Using JAVA_OPTS = $JAVA_OPTS"
+cd $DOTCMS_HOME
 
 if [ -z $1 ]; then
     cmd="start"
@@ -119,7 +129,7 @@ if [ $cmd = "-usage" -o $cmd = "usage" ]; then
   echo "  run          Start dotCMS redirecting the output to the console"
   exit 1;
 elif [ $cmd = "run" ]; then
-	exec "$PRGDIR"/"$EXECUTABLE" run "$@"
+	exec "$TOMCAT_HOME"/bin/"$EXECUTABLE" run "$@"
 else
-    exec "$PRGDIR"/"$EXECUTABLE" start "$@"
+    exec "$TOMCAT_HOME"/bin/"$EXECUTABLE" start "$@"
 fi
