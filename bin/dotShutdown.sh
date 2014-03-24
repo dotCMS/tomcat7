@@ -34,9 +34,10 @@ if [ "x$RUN_CONF" = "x" ]; then
     RUN_CONF="$PRGDIR/build.conf"
 fi
 if [ -r "$RUN_CONF" ]; then
-    . "$RUN_CONF"
+    . "$RUN_CONF" 2>/dev/null
 fi
 
+DISTRIBUTION_HOME=`cd "$PRGDIR/.." ; pwd`
 TOMCAT_HOME=`cd "$PRGDIR/.." ; pwd`
 DOTCMS_HOME=`cd "$PRGDIR/../$HOME_FOLDER" ; pwd`
 
@@ -57,7 +58,7 @@ fi
 
 # Sets DOTSERVER if not specified and changes existing JAVA_OPTS to use it
 if [ -z "$DOTSERVER" ]; then
-        DOTSERVER=`echo "$DOTCMS_HOME" | sed -e 's/\(.*\)\///'`
+        DOTSERVER=`echo "$DISTRIBUTION_HOME" | sed -e 's/\(.*\)\///'`
 fi
 export JAVA_OPTS="$JAVA_OPTS -Ddotserver=$DOTSERVER"
 
