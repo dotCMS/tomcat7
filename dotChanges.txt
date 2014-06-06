@@ -11,3 +11,4 @@ List of changes to the default tomcat configuration:
         /bin/dotShutdown.bat
         /bin/build.conf
         /bin/build.conf.bat
+    3. Removed all the content inside the webapps folder.
