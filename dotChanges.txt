@@ -12,3 +12,4 @@ List of changes to the default tomcat configuration:
         /bin/build.conf
         /bin/build.conf.bat
     3. Removed all the content inside the webapps folder.
+    4. Added all the jars to endorsed folder (Audio Captcha).
